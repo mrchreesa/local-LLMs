@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>A.I.</title>
+
+	<!-- <link rel="stylesheet" href="dist/reset.css"> -->
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+	<!-- Font awesome is required for the chalkboard plugin -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script> -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
+	<script src="plugin/chalkboard/font-awesome-all.min.js"></script>
+	<link rel="stylesheet" href="plugin/chalkboard/font-awesome-all.min.css">
+
+	<!-- Custom controls plugin is used to for opening and closing annotation modes. -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"></script> -->
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/style.css"> -->
+	<!-- <script src="plugin/customcontrols/plugin.js"></script> -->
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+	<!-- Chalkboard plugin -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script> -->
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css"> -->
+	<!-- <script src="plugin/chalkboard/plugin.js"></script> -->
+	<link rel="stylesheet" href="plugin/chalkboard/style.css">
+
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins/menu/font-awesome/css/fontawesome.css"> -->
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"> -->
+
+	<script src="plugin/markdown/marked.js"></script>
+
+	<style>
+		.scrollable {
+			overflow-y: auto;
+			max-height: 90vh;
+			width: 100%;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+		}
+	</style>
+</head>
+<body style="overflow: auto;">
+
+<div class="reveal">
+<div class="slides">
+
+<section
+	class="scrollable"
+	data-markdown="./slides/README.md"
+	data-separator="^\r?\n---\n---"
+	data-separator-vertical="\n\n---\n\n"
+	data-separator-notes="^Note:" data-charset="iso-8859-15">
+</section>
+
+</div>
+</div>
+
+<script src="dist/reveal.js"></script>
+
+<script src="plugin/chalkboard/plugin.js"></script>
+<script src="plugin/customcontrols/plugin.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/zoom/zoom.js"></script>
+
+<script>
+	// More info about initialization & config:
+	// - https://revealjs.com/initialization/
+	// - https://revealjs.com/config/
+	const checkOrigin = () => {
+		const origin = window.location.origin;
+		const pn = window.location.pathname;
+		return origin === 'http://localhost:8000' ? '' : pn;
+	};
+	const originalRenderer = new marked.Renderer();
+	const customRenderer = new marked.Renderer();
+	customRenderer.image = function (href, title, text) {
+		const baseUrl = checkOrigin();
+		const fullHref = href.startsWith('http') ? href : baseUrl + href;
+		return originalRenderer.image(fullHref, title, text);
+	};
+	customRenderer.code = function (code, infos, escaped) {
+		let lang = 'plaintext', lineNumbers = '', startFrom = '', hasLineNumbers = false;
+
+		if (infos) {
+			const match = infos.match(/^(\w+)(?:\s*\[([^\]]*)\])?/);
+			if (match) {
+				lang = match[1] || 'plaintext';
+				if (match[2] !== undefined) {
+					hasLineNumbers = true;
+					if (match[2].includes(':')) {
+						[startFrom, lineNumbers] = match[2].split(':', 2);
+						startFrom = startFrom.trim();
+						lineNumbers = lineNumbers.trim();
+					} else {
+						lineNumbers = match[2];
+					}
+				}
+			}
+		}
+
+		// const escapedCode = escaped ? code : code.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" }[m]));
+
+		const attrs = (hasLineNumbers ? ` data-line-numbers="${lineNumbers}"` : '') +
+			(startFrom ? ` data-ln-start-from="${startFrom}"` : '');
+
+		return `<pre><code data-trim class="language-${lang}"${attrs}>${escaped || code}</code></pre>`;
+	};
+
+	Reveal.initialize({
+		markdown: {
+			breaks: true,
+			gfm: true,
+			renderer: customRenderer
+		},
+		customcontrols: {
+			controls: [
+				{ icon: '<i class="fa fa-pen"></i>', title: 'Toggle notes canvas (C)', action: 'RevealChalkboard.toggleNotesCanvas();' }
+			]
+		},
+		controlsBackArrows: 'hidden',
+		hash: true,
+		history: true,
+		hideInactiveCursor: true,
+		hideCursorTime: 5000,
+		plugins: [ RevealChalkboard, RevealCustomControls, RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ]
+	});
+</script>
+
+</body>
+</html>
