@@ -13,7 +13,7 @@ Hands-On Local AI Workshop <!-- .element: class="fragment r-fit-text" -->
 ## Scan the QR code to open the presentation
 <!-- .slide: data-transition="fade" -->
 
-![](images/00-qr.svg)
+<img src="images/qr-code.png" width="50%" />
 
 ---
 ---

@@ -75,16 +75,12 @@
 	// More info about initialization & config:
 	// - https://revealjs.com/initialization/
 	// - https://revealjs.com/config/
-	const checkOrigin = () => {
-		const origin = window.location.origin;
-		const pn = window.location.pathname;
-		return origin === 'http://localhost:8000' ? '' : pn;
-	};
 	const originalRenderer = new marked.Renderer();
 	const customRenderer = new marked.Renderer();
 	customRenderer.image = function (href, title, text) {
-		const baseUrl = checkOrigin();
-		const fullHref = href.startsWith('http') ? href : baseUrl + href;
+		const fullHref = href.startsWith('http') || href.startsWith('/')
+			? href
+			: new URL(href, window.location.href).pathname;
 		return originalRenderer.image(fullHref, title, text);
 	};
 	customRenderer.code = function (code, infos, escaped) {
